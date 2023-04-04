@@ -26,10 +26,11 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t fabri7/graphql-actions:0.0.1 .
+          docker build -t fabri7/graphql-actions:latest .
 
       - name: Push Docker Image
         run: |
           docker push fabri7/graphql-actions:0.0.1
+          docker push fabri7/graphql-actions:latest
 
-    # - name: Build the Docker image
     #   run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
