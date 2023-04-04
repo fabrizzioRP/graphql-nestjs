@@ -16,6 +16,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Git Semantic Version
+        uses: PaulHatch/semantic-version@v4.0.3
+        with:
+          major_pattern: 'major:'
+          minor_pattern: 'feat:'
+          format: '${major}.${minor}.${patch}-prerelease${increment}'
+        id: version
+
       - name: Docker Login
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
@@ -24,13 +32,17 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
 
       - name: Build Docker Image
+        env:
+          NEW_VERSION: ${{ steps.version.outputs.version }} # <Steps>.<ID_NAME>.<OUTPUT_STEP>.<NAME_OUTPUT>
         run: |
-          docker build -t fabri7/graphql-actions:0.0.1 .
+          docker build -t fabri7/graphql-actions:$NEW_VERSION .
           docker build -t fabri7/graphql-actions:latest .
 
       - name: Push Docker Image
+        env:
+          NEW_VERSION: ${{ steps.version.outputs.version }} # <Steps>.<ID_NAME>.<OUTPUT_STEP>.<NAME_OUTPUT>
         run: |
-          docker push fabri7/graphql-actions:0.0.1
+          docker push fabri7/graphql-actions:$NEW_VERSION
           docker push fabri7/graphql-actions:latest
 
     #   run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
